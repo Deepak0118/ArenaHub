@@ -1,0 +1,16 @@
+# Dependencies
+node_modules/
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Archives & Tools
+*.zip
+*.kiro
+
+# Documentation
+docs/
+*.md
+!README.md

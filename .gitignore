@@ -1,0 +1,29 @@
+# Root .gitignore — ArenaHub
+
+# Dependencies & Builds
+node_modules/
+dist/
+build/
+.DS_Store
+*.log
+
+# Environment Secrets
+.env
+.env.*
+!.env.example
+
+# Archives & Temporary Files
+*.zip
+*.rar
+*.tar
+*.gz
+*.kiro
+
+# Internal Documentation & Notes
+docs/
+doc/
+ARCHITECTURE_GUIDE.md
+DESIGN_SYSTEM.md
+decisions.md
+*.md
+!README.md

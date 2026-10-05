@@ -1,0 +1,237 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Enums ──────────────────────────────────────────────
+
+enum Role {
+  STUDENT
+  AUTHORITY
+}
+
+enum ParticipationType {
+  INDIVIDUAL
+  FIXED_GROUP
+  OPEN
+}
+
+enum FineStrategy {
+  FLAT
+  PER_PARTICIPANT
+  SPLIT
+}
+
+enum ResourceStatus {
+  AVAILABLE
+  FROZEN
+  ISSUED
+  MAINTENANCE
+}
+
+enum BookingStatus {
+  DRAFT
+  CONFIRMED_PENDING_COLLECTION
+  ACTIVE
+  COMPLETED
+  LATE_RETURNED
+  EXPIRED
+  CANCELLED
+  REJECTED
+}
+
+enum ParticipantStatus {
+  INVITED
+  ACCEPTED
+  DECLINED
+}
+
+enum PaymentType {
+  FINE
+  ACTIVITY_FEE
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+// ─── Models ─────────────────────────────────────────────
+
+model User {
+  id            String   @id @default(uuid())
+  email         String   @unique
+  name          String
+  username      String   @unique
+  // Store lowercase version for case-insensitive uniqueness.
+  // The 'username' field holds the display version (e.g. "RahulK"),
+  // 'usernameLower' holds "rahulk" and has the unique constraint
+  // that actually prevents collisions.
+  usernameLower String   @unique
+  role          Role     @default(STUDENT)
+  googleId      String?  @unique
+  password      String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  bookingsCreated Booking[]
+  participations  BookingParticipant[]
+  fines           Fine[]
+  payments        Payment[]
+  eventsCreated   Event[]
+  notifications   Notification[]
+}
+
+model GameConfig {
+  id                      String            @id @default(uuid())
+  name                    String            @unique
+  isActive                Boolean           @default(true)
+  participationType       ParticipationType
+  minPlayers              Int
+  maxPlayers              Int
+  slotDurationMinutes     Int
+  collectionWindowMinutes Int               @default(15)
+  cooldownMinutes         Int               @default(0)
+  gracePeriodMinutes      Int               @default(8)
+  finePerMinute           Decimal           @default(5) @db.Decimal(10, 2)
+  fineStrategy            FineStrategy      @default(SPLIT)
+  requiresPayment         Boolean           @default(false)
+  activityFee             Decimal           @default(0) @db.Decimal(10, 2)
+  rulesText               String?
+  equipmentProvided       String[]
+  equipmentRequired       String[]
+  createdAt               DateTime          @default(now())
+  updatedAt               DateTime          @updatedAt
+
+  resources         Resource[]
+  bookings          Booking[]
+  disabledForEvents Event[]
+}
+
+model Resource {
+  id           String         @id @default(uuid())
+  gameConfigId String
+  label        String
+  status       ResourceStatus @default(AVAILABLE)
+  version      Int            @default(0)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  gameConfig GameConfig @relation(fields: [gameConfigId], references: [id])
+  bookings   Booking[]
+
+  @@index([gameConfigId, status])
+}
+
+model Booking {
+  id                 String        @id @default(uuid())
+  gameConfigId       String
+  resourceId         String?
+  createdById        String
+  teamSize           Int?
+  status             BookingStatus @default(DRAFT)
+  confirmedAt        DateTime?
+  collectionDeadline DateTime?
+  issuedAt           DateTime?
+  startTime          DateTime?
+  endTime            DateTime?
+  returnedAt         DateTime?
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  gameConfig   GameConfig           @relation(fields: [gameConfigId], references: [id])
+  resource     Resource?            @relation(fields: [resourceId], references: [id])
+  createdBy    User                 @relation(fields: [createdById], references: [id])
+  participants BookingParticipant[]
+  fines        Fine[]
+  payments     Payment[]
+
+  @@index([gameConfigId, status])
+  @@index([createdById])
+  @@index([status])
+}
+
+model BookingParticipant {
+  id        String            @id @default(uuid())
+  bookingId String
+  userId    String
+  status    ParticipantStatus @default(INVITED)
+  createdAt DateTime          @default(now())
+
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id])
+
+  @@unique([bookingId, userId])
+  @@index([userId, status])
+}
+
+model Fine {
+  id        String   @id @default(uuid())
+  bookingId String
+  userId    String
+  amount    Decimal  @db.Decimal(10, 2)
+  reason    String
+  createdAt DateTime @default(now())
+
+  booking  Booking   @relation(fields: [bookingId], references: [id])
+  user     User      @relation(fields: [userId], references: [id])
+  payments Payment[]
+
+  @@index([userId])
+  @@index([bookingId])
+}
+
+model Payment {
+  id        String        @id @default(uuid())
+  userId    String
+  type      PaymentType
+  fineId    String?
+  bookingId String?
+  amount    Decimal       @db.Decimal(10, 2)
+  status    PaymentStatus @default(PENDING)
+  method    String?
+  paidAt    DateTime?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  user    User     @relation(fields: [userId], references: [id])
+  fine    Fine?    @relation(fields: [fineId], references: [id])
+  booking Booking? @relation(fields: [bookingId], references: [id])
+
+  @@index([userId, status])
+  @@index([type])
+}
+
+model Event {
+  id               String   @id @default(uuid())
+  title            String
+  description      String?
+  posterUrl        String?
+  startDate        DateTime
+  endDate          DateTime
+  registrationInfo String?
+  createdById      String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  createdBy     User         @relation(fields: [createdById], references: [id])
+  disabledGames GameConfig[]
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  title     String
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, read])
+}
