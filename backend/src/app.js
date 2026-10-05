@@ -23,15 +23,18 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// ── Health check ──
-app.get('/', (req, res) => {
-  res.status(200).send('ArenaHub API Server is Live and Operational');
-});
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'OK', message: 'ArenaHub API running' });
+// ── Normalize URLs (fix double slashes or missing /api prefixes) ──
+app.use((req, res, next) => {
+  req.url = req.url.replace(/\/{2,}/g, '/');
+  next();
 });
 
-// ── Routes (imported after they're created) ──
+// ── Health check ──
+app.get(['/', '/health', '/api/health'], (req, res) => {
+  res.status(200).json({ status: 'OK', message: 'ArenaHub API Server is Live and Operational' });
+});
+
+// ── Routes (supports both /api/xxx and /xxx) ──
 import authRoutes from './routes/auth.routes.js';
 import gameRoutes from './routes/game.routes.js';
 import bookingRoutes from './routes/booking.routes.js';
@@ -40,13 +43,13 @@ import paymentRoutes from './routes/payment.routes.js';
 import eventRoutes from './routes/event.routes.js';
 import notificationRoutes from './routes/notification.routes.js';
 
-app.use('/api/auth', authRoutes);
-app.use('/api/games', gameRoutes);
-app.use('/api/bookings', bookingRoutes);
-app.use('/api/fines', fineRoutes);
-app.use('/api/payments', paymentRoutes);
-app.use('/api/events', eventRoutes);
-app.use('/api/notifications', notificationRoutes);
+app.use(['/api/auth', '/auth'], authRoutes);
+app.use(['/api/games', '/games'], gameRoutes);
+app.use(['/api/bookings', '/bookings'], bookingRoutes);
+app.use(['/api/fines', '/fines'], fineRoutes);
+app.use(['/api/payments', '/payments'], paymentRoutes);
+app.use(['/api/events', '/events'], eventRoutes);
+app.use(['/api/notifications', '/notifications'], notificationRoutes);
 
 
 // ── 404 handler ──
