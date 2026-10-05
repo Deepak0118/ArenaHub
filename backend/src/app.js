@@ -11,6 +11,9 @@ app.use(cors({
 app.use(express.json());
 
 // ── Health check ──
+app.get('/', (req, res) => {
+  res.status(200).send('ArenaHub API Server is Live and Operational');
+});
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'ArenaHub API running' });
 });
