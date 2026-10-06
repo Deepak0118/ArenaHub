@@ -138,13 +138,13 @@ export default function Login() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-black hover:opacity-80 transition-opacity p-1 flex items-center justify-center z-10"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white hover:opacity-80 transition-opacity p-1 flex items-center justify-center z-10"
                   title={showPassword ? "Hide password" : "Show password"}
                 >
                   {showPassword ? (
-                    <EyeOff className="w-5 h-5 text-black stroke-[2.25]" />
+                    <EyeOff className="w-5 h-5 text-white stroke-[2.25]" />
                   ) : (
-                    <Eye className="w-5 h-5 text-black stroke-[2.25]" />
+                    <Eye className="w-5 h-5 text-white stroke-[2.25]" />
                   )}
                 </button>
               </div>
@@ -181,7 +181,7 @@ export default function Login() {
       
       <div className="absolute bottom-8 left-0 right-0 text-center pointer-events-none opacity-40">
         <p className="text-[10px] text-foreground-secondary font-bold">
-          Chitkara University Sports Complex
+          University Sports Complex
         </p>
       </div>
 
