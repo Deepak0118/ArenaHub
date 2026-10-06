@@ -113,7 +113,7 @@ const TypedText = ({ text, className = '', startDelay = 0 }) => {
       i++;
       setDisplayed(text.slice(0, i));
       if (i >= text.length) clearInterval(timer);
-    }, 50);
+    }, 95);
     return () => clearInterval(timer);
   }, [started, text]);
 

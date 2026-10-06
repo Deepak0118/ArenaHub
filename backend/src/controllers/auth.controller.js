@@ -11,7 +11,7 @@ export async function googleLogin(req, res) {
     return res.status(400).json({ success: false, message: 'Missing Google credential token' });
   }
 
-  // 1. Verify Google token
+  // 1. Cryptographically verify Google ID Token signature and claims via official Google OAuth client
   let payload;
   try {
     const ticket = await googleClient.verifyIdToken({
@@ -20,7 +20,7 @@ export async function googleLogin(req, res) {
     });
     payload = ticket.getPayload();
   } catch {
-    return res.status(401).json({ success: false, message: 'Invalid Google token' });
+    return res.status(401).json({ success: false, message: 'Invalid or forged Google token' });
   }
 
   const { email, name, sub: googleId } = payload;
