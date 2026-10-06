@@ -94,14 +94,14 @@ export default function AwaitingCollection() {
   }
 
   return (
-    <div className="p-6 md:p-12 max-w-6xl mx-auto text-foreground">
-      <header className="sticky top-0 z-40 bg-background/90 backdrop-blur-xl mb-8 border-b border-border pb-6 pt-4 flex items-end justify-between -mx-6 px-6 md:-mx-12 md:px-12">
+    <div className="p-4 sm:p-6 md:p-10 max-w-6xl mx-auto text-foreground">
+      <header className="sticky top-0 z-30 bg-background/95 backdrop-blur-xl mb-6 border-b border-border pb-4 pt-2 flex items-end justify-between">
         <div>
           <div className="flex items-center gap-2 mb-1">
             <div className="w-2 h-2 rounded-full bg-foreground animate-pulse shadow-[0_0_8px_rgba(255,255,255,0.4)]"></div>
-            <span className="text-[10px] text-foreground font-bold block">Active Requests</span>
+            <span className="text-[10px] text-foreground font-bold uppercase tracking-wider block">Active Requests</span>
           </div>
-          <h1 className="text-3xl font-display ">Issue Equipment</h1>
+          <h1 className="text-2xl sm:text-3xl font-display">Issue Equipment</h1>
         </div>
       </header>
 

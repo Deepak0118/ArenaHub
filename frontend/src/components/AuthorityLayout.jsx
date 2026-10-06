@@ -115,13 +115,16 @@ export default function AuthorityLayout() {
           <span className="text-[9px] bg-warning/10 text-warning px-2 py-0.5 rounded font-bold">Authority</span>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-full bg-brand flex items-center justify-center text-xs font-bold text-white font-display">
+            {user?.name?.charAt(0).toUpperCase()}
+          </div>
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 text-foreground-secondary hover:text-foreground focus:outline-none"
+            className="p-1.5 text-foreground-secondary hover:text-foreground focus:outline-none"
             aria-label="Toggle Menu"
           >
-            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
       </header>

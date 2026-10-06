@@ -61,50 +61,50 @@ export default function PaymentOverview() {
 
   return (
     <div className="min-h-screen bg-background text-foreground pb-12">
-      <div className="sticky top-0 z-40 bg-background/90 backdrop-blur-xl pt-6 md:pt-12 pb-4 shadow-sm">
-        <div className="max-w-6xl mx-auto px-6 md:px-12">
+      <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-xl pt-4 md:pt-8 pb-4 shadow-sm">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-10">
           
           <header className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-4 pb-6 border-b border-border">
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <div className="w-2 h-2 rounded-full bg-foreground"></div>
-                <span className="text-[10px] text-foreground font-bold ">Billing & Transactions</span>
+                <span className="text-[10px] text-foreground font-bold uppercase tracking-wider">Billing & Transactions</span>
               </div>
-              <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-6">
-                <h1 className="text-4xl font-display text-foreground">Payment Overview</h1>
+              <div className="flex flex-col md:flex-row md:items-center gap-3 md:gap-6">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-display text-foreground">Payment Overview</h1>
                 
                 <div className="flex items-center gap-3">
-                  <div className="px-4 py-2 bg-background border border-warning/30 rounded flex items-center gap-3">
+                  <div className="px-3 py-1.5 bg-background border border-warning/30 rounded flex items-center gap-2.5">
                     <span className="text-[10px] font-bold text-warning">Pending Dues</span>
-                    <span className="text-sm font-mono font-bold text-warning tabular-nums">Rs {totalPending}</span>
+                    <span className="text-xs font-mono font-bold text-warning tabular-nums">Rs {totalPending}</span>
                   </div>
                 </div>
               </div>
             </div>
-        <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
-          <select
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-            className="bg-background-card border border-border text-foreground rounded px-3 py-2 focus:outline-none focus:border-brand transition-colors text-sm font-medium h-10 w-full sm:w-auto"
-          >
-            <option value="ALL">All Payments</option>
-            <option value="PENDING">Pending (Unpaid)</option>
-            <option value="PAID">Cleared (Paid)</option>
-          </select>
-          <div className="relative w-full sm:w-auto">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-foreground-muted" />
-            <input 
-              type="text" 
-              placeholder="Search student or invoice..." 
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="bg-background-card border border-border text-foreground rounded px-4 py-2 pl-10 focus:outline-none focus:border-brand transition-colors w-full sm:w-64 text-sm font-medium h-10"
-            />
-          </div>
-        </div>
+            <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+              <select
+                value={filter}
+                onChange={(e) => setFilter(e.target.value)}
+                className="bg-background-card border border-border text-foreground rounded px-3 py-2 focus:outline-none focus:border-brand transition-colors text-xs font-medium h-10 w-full sm:w-auto"
+              >
+                <option value="ALL">All Payments</option>
+                <option value="PENDING">Pending (Unpaid)</option>
+                <option value="PAID">Cleared (Paid)</option>
+              </select>
+              <div className="relative w-full sm:w-auto">
+                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-foreground-muted" />
+                <input 
+                  type="text" 
+                  placeholder="Search student or invoice..." 
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="bg-background-card border border-border text-foreground rounded px-4 py-2 pl-10 focus:outline-none focus:border-brand transition-colors w-full sm:w-64 text-xs font-medium h-10"
+                />
+              </div>
+            </div>
           </header>
           
-          <div className="grid grid-cols-12 gap-4 px-8 pb-4 text-[10px] font-bold text-foreground-secondary hidden md:grid">
+          <div className="grid grid-cols-12 gap-4 px-6 pb-4 text-[10px] font-bold text-foreground-secondary hidden md:grid">
             <div className="col-span-4">Student & Reference</div>
             <div className="col-span-4">Details</div>
             <div className="col-span-2">Amount</div>
@@ -113,7 +113,7 @@ export default function PaymentOverview() {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-6 md:px-12 pt-4">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-10 pt-4">
         {error && (
           <div className="bg-error/10 border border-error/20 rounded p-4 mb-8 flex items-start gap-3">
             <AlertCircle className="w-5 h-5 shrink-0 text-error mt-0.5" />

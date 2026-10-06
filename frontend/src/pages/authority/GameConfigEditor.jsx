@@ -149,14 +149,14 @@ export default function GameConfigEditor() {
   }
 
   return (
-    <div className="p-6 md:p-12 max-w-4xl mx-auto text-foreground">
-      <header className="sticky top-0 z-40 bg-background/90 backdrop-blur-xl mb-8 border-b border-border pb-6 pt-4 flex items-end justify-between -mx-6 px-6 md:-mx-12 md:px-12">
+    <div className="p-4 sm:p-6 md:p-10 max-w-4xl mx-auto text-foreground">
+      <header className="sticky top-0 z-30 bg-background/95 backdrop-blur-xl mb-6 border-b border-border pb-4 pt-2 flex items-end justify-between">
         <div>
           <div className="flex items-center gap-2 mb-2">
             <div className="w-2 h-2 rounded-full bg-foreground"></div>
-            <span className="text-[10px] text-foreground font-bold ">System Configuration</span>
+            <span className="text-[10px] text-foreground font-bold uppercase tracking-wider">System Configuration</span>
           </div>
-          <h1 className="text-3xl font-display ">Session Parameters</h1>
+          <h1 className="text-2xl sm:text-3xl font-display">Session Parameters</h1>
         </div>
       </header>
       {games.length === 0 ? (

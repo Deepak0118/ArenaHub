@@ -98,44 +98,45 @@ export default function ControlRoom() {
   });
 
   return (
-    <div className="p-6 md:p-12 max-w-[1400px] mx-auto text-foreground">
-      <header className="sticky top-0 z-40 bg-background/90 backdrop-blur-xl mb-8 border-b border-border pb-6 pt-4 flex flex-col md:flex-row md:items-end justify-between gap-4 -mx-6 px-6 md:-mx-12 md:px-12">
+    <div className="p-4 sm:p-6 md:p-10 max-w-[1400px] mx-auto text-foreground">
+      <header className="sticky top-0 z-30 bg-background/95 backdrop-blur-xl mb-6 border-b border-border pb-4 pt-2 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-2">
             <div className="w-2 h-2 rounded-full bg-foreground animate-pulse shadow-[0_0_8px_rgba(255,255,255,0.4)]"></div>
-            <span className="text-[10px] text-foreground font-bold ">Live Status</span>
+            <span className="text-[10px] text-foreground font-bold uppercase tracking-wider">Live Status</span>
           </div>
-          <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-6">
-            <h1 className="text-4xl font-display text-foreground">Dashboard</h1>
+          <div className="flex flex-col md:flex-row md:items-center gap-3 md:gap-6">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-display text-foreground">Dashboard</h1>
             
-            {}
-            <div className="flex items-center gap-4">
-              <div className="px-4 py-2 bg-transparent border border-border rounded flex items-center gap-3 shadow-sm">
+            {/* Live Stats Pills */}
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+              <div className="px-3 py-1.5 bg-transparent border border-border rounded flex items-center gap-2.5 shadow-sm">
                 <span className="text-[10px] font-bold text-foreground-secondary">Active</span>
-                <span className="text-sm font-mono font-bold text-foreground tabular-nums">{stats.active}/{stats.total}</span>
+                <span className="text-xs font-mono font-bold text-foreground tabular-nums">{stats.active}/{stats.total}</span>
               </div>
               {stats.awaiting > 0 && (
-                <div className="px-4 py-2 bg-warning/5 border border-warning/30 shadow-[0_0_10px_rgba(255,170,0,0.1)] rounded flex items-center gap-3">
+                <div className="px-3 py-1.5 bg-warning/5 border border-warning/30 shadow-[0_0_10px_rgba(255,170,0,0.1)] rounded flex items-center gap-2.5">
                   <span className="text-[10px] font-bold text-warning">Awaiting</span>
-                  <span className="text-sm font-mono font-bold text-warning tabular-nums animate-pulse">{stats.awaiting}</span>
+                  <span className="text-xs font-mono font-bold text-warning tabular-nums animate-pulse">{stats.awaiting}</span>
                 </div>
               )}
               {stats.late > 0 && (
-                <div className="px-4 py-2 bg-error/5 border border-error/30 shadow-[0_0_10px_rgba(255,0,0,0.1)] rounded flex items-center gap-3">
+                <div className="px-3 py-1.5 bg-error/5 border border-error/30 shadow-[0_0_10px_rgba(255,0,0,0.1)] rounded flex items-center gap-2.5">
                   <span className="text-[10px] font-bold text-error">Late</span>
-                  <span className="text-sm font-mono font-bold text-error tabular-nums animate-pulse">{stats.late}</span>
+                  <span className="text-xs font-mono font-bold text-error tabular-nums animate-pulse">{stats.late}</span>
                 </div>
               )}
             </div>
           </div>
         </div>
       </header>
-        {error && (
-          <div className="bg-error/10 border border-error/20 rounded p-4 mb-8 flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 shrink-0 text-error mt-0.5" />
-            <p className="text-sm font-bold text-error">{error}</p>
-          </div>
-        )}
+
+      {error && (
+        <div className="bg-error/10 border border-error/20 rounded p-4 mb-6 flex items-start gap-3">
+          <AlertCircle className="w-5 h-5 shrink-0 text-error mt-0.5" />
+          <p className="text-xs font-bold text-error">{error}</p>
+        </div>
+      )}
 
       {}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
