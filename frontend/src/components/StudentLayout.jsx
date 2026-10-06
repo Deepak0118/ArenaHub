@@ -120,10 +120,10 @@ export default function StudentLayout() {
   }, [pathname, notifications]);
 
   const navItems = [
-    { name: 'Facilities', path: '/games', category: 'general', icon: <Home className="w-4 h-4" /> },
-    { name: 'My Sessions', path: '/my-bookings', category: 'my-bookings', icon: <Calendar className="w-4 h-4" /> },
-    { name: 'My Payments', path: '/payments', category: 'payments', icon: <CreditCard className="w-4 h-4" /> },
-    { name: 'Events', path: '/events', category: 'events', icon: <Trophy className="w-4 h-4" /> },
+    { name: 'Facilities', shortName: 'Facilities', path: '/games', category: 'general', icon: <Home className="w-4 h-4" /> },
+    { name: 'My Sessions', shortName: 'Sessions', path: '/my-bookings', category: 'my-bookings', icon: <Calendar className="w-4 h-4" /> },
+    { name: 'My Payments', shortName: 'Payments', path: '/payments', category: 'payments', icon: <CreditCard className="w-4 h-4" /> },
+    { name: 'Events', shortName: 'Events', path: '/events', category: 'events', icon: <Trophy className="w-4 h-4" /> },
   ];
 
   const handleLogout = () => {
@@ -337,7 +337,7 @@ export default function StudentLayout() {
       </main>
 
       {/* Mobile Bottom Navigation Bar */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-xl border-t border-border flex justify-around items-center py-2 px-1 shadow-2xl">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-xl border-t border-border flex items-center justify-around h-16 px-1 shadow-2xl">
         {navItems.map((item) => {
           const count = getCategoryUnreadCount(item.category);
           return (
@@ -345,20 +345,22 @@ export default function StudentLayout() {
               key={item.path}
               to={item.path}
               className={({ isActive }) =>
-                `flex flex-col items-center gap-1 px-3 py-1 rounded-lg text-[10px] font-bold transition-all relative ${
+                `flex-1 flex flex-col items-center justify-center gap-1 h-full py-1 px-0.5 rounded-lg text-[10px] font-bold transition-all relative ${
                   isActive ? 'text-brand' : 'text-foreground-secondary hover:text-foreground'
                 }`
               }
             >
-              <div className="relative">
+              <div className="relative flex items-center justify-center w-5 h-5">
                 {item.icon}
                 {count > 0 && (
-                  <span className="absolute -top-1 -right-2 bg-brand text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center animate-pulse">
+                  <span className="absolute -top-1.5 -right-2.5 bg-brand text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center animate-pulse">
                     {count}
                   </span>
                 )}
               </div>
-              <span>{item.name}</span>
+              <span className="whitespace-nowrap truncate max-w-full text-center tracking-tight">
+                {item.shortName || item.name}
+              </span>
             </NavLink>
           );
         })}

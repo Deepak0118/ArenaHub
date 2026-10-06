@@ -73,11 +73,11 @@ export default function AuthorityLayout() {
   };
 
   const navItems = [
-    { name: 'Dashboard', path: '/authority', icon: <LayoutDashboard className="w-4 h-4" />, exact: true },
-    { name: 'Issue Equipment', path: '/authority/queue', icon: <Clock className="w-4 h-4" /> },
-    { name: 'Session Parameters', path: '/authority/config', icon: <Settings className="w-4 h-4" /> },
-    { name: 'Payments', path: '/authority/payments', icon: <CreditCard className="w-4 h-4" /> },
-    { name: 'Events', path: '/authority/events', icon: <Trophy className="w-4 h-4" /> },
+    { name: 'Dashboard', shortName: 'Dashboard', path: '/authority', icon: <LayoutDashboard className="w-4 h-4" />, exact: true },
+    { name: 'Issue Equipment', shortName: 'Issue', path: '/authority/queue', icon: <Clock className="w-4 h-4" /> },
+    { name: 'Session Parameters', shortName: 'Config', path: '/authority/config', icon: <Settings className="w-4 h-4" /> },
+    { name: 'Payments', shortName: 'Payments', path: '/authority/payments', icon: <CreditCard className="w-4 h-4" /> },
+    { name: 'Events', shortName: 'Events', path: '/authority/events', icon: <Trophy className="w-4 h-4" /> },
   ];
 
   useEffect(() => {
@@ -276,7 +276,7 @@ export default function AuthorityLayout() {
       </main>
 
       {/* Mobile Bottom Navigation Bar */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-xl border-t border-border flex justify-around items-center py-2 px-1 shadow-2xl">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-xl border-t border-border flex items-center justify-around h-16 px-1 shadow-2xl">
         {navItems.map((item) => {
           const count = getCategoryUnreadCount(item.path);
           return (
@@ -285,20 +285,22 @@ export default function AuthorityLayout() {
               to={item.path}
               end={item.exact}
               className={({ isActive }) =>
-                `flex flex-col items-center gap-1 px-3 py-1 rounded-lg text-[10px] font-bold transition-all relative ${
+                `flex-1 flex flex-col items-center justify-center gap-1 h-full py-1 px-0.5 rounded-lg text-[10px] font-bold transition-all relative ${
                   isActive ? 'text-brand' : 'text-foreground-secondary hover:text-foreground'
                 }`
               }
             >
-              <div className="relative">
+              <div className="relative flex items-center justify-center w-5 h-5">
                 {item.icon}
                 {count > 0 && (
-                  <span className="absolute -top-1 -right-2 bg-brand text-background text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center animate-pulse">
+                  <span className="absolute -top-1.5 -right-2.5 bg-brand text-background text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center animate-pulse">
                     {count}
                   </span>
                 )}
               </div>
-              <span>{item.name}</span>
+              <span className="whitespace-nowrap truncate max-w-full text-center tracking-tight">
+                {item.shortName || item.name}
+              </span>
             </NavLink>
           );
         })}

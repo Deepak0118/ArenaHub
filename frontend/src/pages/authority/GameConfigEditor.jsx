@@ -175,10 +175,10 @@ export default function GameConfigEditor() {
               <select
                 value={selectedGame.id}
                 onChange={handleGameSelectChange}
-                className="w-full appearance-none bg-background border border-border text-foreground rounded px-4 py-3 focus:outline-none focus:border-brand transition-colors font-display text-lg cursor-pointer"
+                className="w-full max-w-full appearance-none bg-background border border-border text-foreground rounded px-4 py-3 focus:outline-none focus:border-brand transition-colors font-display text-lg cursor-pointer"
               >
                 {games.map(game => (
-                  <option key={game.id} value={game.id}>
+                  <option key={game.id} value={game.id} className="bg-[#121214] text-foreground">
                     {game.name.replace('\n', ' ')}
                   </option>
                 ))}

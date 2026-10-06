@@ -85,11 +85,11 @@ export default function PaymentOverview() {
               <select
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
-                className="bg-background-card border border-border text-foreground rounded px-3 py-2 focus:outline-none focus:border-brand transition-colors text-xs font-medium h-10 w-full sm:w-auto"
+                className="bg-background-card border border-border text-foreground rounded px-3 py-2 focus:outline-none focus:border-brand transition-colors text-xs font-medium h-10 w-full sm:w-auto max-w-full cursor-pointer"
               >
-                <option value="ALL">All Payments</option>
-                <option value="PENDING">Pending (Unpaid)</option>
-                <option value="PAID">Cleared (Paid)</option>
+                <option value="ALL" className="bg-[#121214] text-foreground">All Payments</option>
+                <option value="PENDING" className="bg-[#121214] text-foreground">Pending (Unpaid)</option>
+                <option value="PAID" className="bg-[#121214] text-foreground">Cleared (Paid)</option>
               </select>
               <div className="relative w-full sm:w-auto">
                 <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-foreground-muted" />
