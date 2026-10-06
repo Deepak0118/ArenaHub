@@ -23,59 +23,106 @@ export async function googleLogin(req, res) {
     return res.status(401).json({ success: false, message: 'Invalid or forged Google token' });
   }
 
-  const { email, name, sub: googleId } = payload;
+  const { email, name, sub: googleId, email_verified, aud } = payload;
 
-  // 2. Domain check — the single identity guarantee for the platform
-  const domain = process.env.ALLOWED_EMAIL_DOMAIN;
-  if (!email.toLowerCase().endsWith(domain)) {
+  // 2. Validate essential payload fields
+  if (!email || !googleId) {
+    return res.status(400).json({ success: false, message: 'Google account missing required identity claims' });
+  }
+
+  if (email_verified !== true) {
+    return res.status(403).json({ success: false, message: 'Unverified Google email address' });
+  }
+
+  if (process.env.GOOGLE_CLIENT_ID && aud !== process.env.GOOGLE_CLIENT_ID) {
+    return res.status(403).json({ success: false, message: 'Invalid token audience' });
+  }
+
+  // 3. Exact and safe institutional domain validation using @${domain}
+  const rawDomain = process.env.ALLOWED_EMAIL_DOMAIN || 'chitkara.edu.in';
+  const domain = rawDomain.replace(/^@/, '').toLowerCase();
+  const normalizedEmail = email.toLowerCase().trim();
+
+  if (!normalizedEmail.endsWith(`@${domain}`)) {
     return res.status(403).json({
       success: false,
-      message: `Only ${domain} emails are allowed`,
+      message: `Only official @${domain} email addresses are permitted.`,
     });
   }
 
-  // 3. Find or create user (single query using OR condition to avoid sequential DB roundtrips)
+  // 4. Single optimized DB lookup by googleId OR email
   let user = await prisma.user.findFirst({
     where: {
       OR: [
         { googleId },
-        { email: email.toLowerCase() }
+        { email: normalizedEmail }
       ]
     }
   });
 
   if (!user) {
-    // New user — auto-generate a permanent username
-    // Extract base username from their real Google display name (e.g., "Rahul Kumar" -> "rahul")
-    // We take the first word, lowercase it, and strip any non-alphabet characters
-    let baseUsername = name.split(' ')[0].toLowerCase().replace(/[^a-z]/g, '');
-    
-    // Fallback just in case the name didn't have any standard alphabet characters
+    // 5. Collision-resistant username generation with race-condition safety
+    let baseUsername = (name || 'user').split(' ')[0].toLowerCase().replace(/[^a-z0-9]/g, '');
     if (!baseUsername) baseUsername = 'user';
-    
-    // Truncate to max 10 characters to keep it clean, then append 4 unique digits
     baseUsername = baseUsername.slice(0, 10);
-    const generatedUsername = `${baseUsername}_${googleId.slice(0, 4)}`;
 
-    user = await prisma.user.create({
-      data: {
-        email: email.toLowerCase(),
-        name,
-        googleId,
-        username: generatedUsername,
-        usernameLower: generatedUsername.toLowerCase(),
-        role: 'STUDENT', // Authority accounts are seeded, never self-registered
-      },
-    });
+    const suffix = `${googleId.slice(-6)}_${Math.floor(1000 + Math.random() * 9000)}`;
+    const generatedUsername = `${baseUsername}_${suffix}`;
+
+    try {
+      user = await prisma.user.create({
+        data: {
+          email: normalizedEmail,
+          name: name || 'Student',
+          googleId,
+          username: generatedUsername,
+          usernameLower: generatedUsername.toLowerCase(),
+          role: 'STUDENT',
+        },
+      });
+    } catch (err) {
+      // Handle concurrent creation race condition (Prisma P2002)
+      if (err.code === 'P2002') {
+        user = await prisma.user.findFirst({
+          where: {
+            OR: [
+              { googleId },
+              { email: normalizedEmail }
+            ]
+          }
+        });
+
+        if (!user) {
+          const fallbackUsername = `user_${Date.now()}`;
+          user = await prisma.user.create({
+            data: {
+              email: normalizedEmail,
+              name: name || 'Student',
+              googleId,
+              username: fallbackUsername,
+              usernameLower: fallbackUsername.toLowerCase(),
+              role: 'STUDENT',
+            }
+          });
+        }
+      } else {
+        throw err;
+      }
+    }
   } else if (!user.googleId) {
-    // If user existed by email but googleId wasn't linked yet, update it
-    user = await prisma.user.update({
-      where: { id: user.id },
-      data: { googleId },
-    });
+    // If user existed by email but googleId was null, link it safely
+    try {
+      user = await prisma.user.update({
+        where: { id: user.id },
+        data: { googleId },
+      });
+    } catch (err) {
+      if (err.code !== 'P2002') throw err;
+      user = await prisma.user.findUnique({ where: { id: user.id } });
+    }
   }
 
-  // 4. Issue full JWT immediately (bypassing the "choose username" step)
+  // 6. Issue ArenaHub JWT containing only necessary safe claims
   const token = jwt.sign(
     { userId: user.id, role: user.role, username: user.username },
     process.env.JWT_SECRET,

@@ -57,11 +57,18 @@ app.use((req, res) => {
   res.status(404).json({ success: false, message: 'Route not found' });
 });
 
-// ── Error handler ──
+// ── Global Error handler ──
 app.use((err, req, res, _next) => {
   const status = err.statusCode || 500;
-  const message = err.message || 'Internal server error';
-  if (status === 500) console.error(err);
+  // Never leak internal database schema, SQL errors, or stack traces to clients
+  const message = status === 500 
+    ? 'An unexpected internal server error occurred. Please try again later.' 
+    : (err.message || 'Error processing request');
+
+  if (status === 500) {
+    console.error('[UNHANDLED SERVER ERROR]', err);
+  }
+
   res.status(status).json({ success: false, message });
 });
 

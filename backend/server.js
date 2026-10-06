@@ -10,13 +10,20 @@ const server = http.createServer(app);
 
 initSocket(server);
 
-server.listen(PORT, async () => {
-  console.log(`ArenaHub API running on port ${PORT}`);
-  startExpiryJobs();
-  // Warm up Prisma DB connection pool eagerly to eliminate initial query latency
+async function startServer() {
   try {
+    // Verify and establish database connection pool before opening HTTP port
     await prisma.$queryRaw`SELECT 1`;
+    console.log('Database connection pool initialized successfully.');
+
+    server.listen(PORT, () => {
+      console.log(`ArenaHub API server listening on port ${PORT}`);
+      startExpiryJobs();
+    });
   } catch (err) {
-    console.warn('DB Warmup Notice:', err.message);
+    console.error('FATAL: Database connection failed during startup:', err.message);
+    process.exit(1);
   }
-});
+}
+
+startServer();
