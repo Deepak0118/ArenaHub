@@ -34,13 +34,15 @@ export async function googleLogin(req, res) {
     });
   }
 
-  // 3. Find or create user
-  let user = await prisma.user.findUnique({ where: { googleId } });
-
-  if (!user) {
-    // Also check by email in case googleId changed (unlikely but safe)
-    user = await prisma.user.findUnique({ where: { email: email.toLowerCase() } });
-  }
+  // 3. Find or create user (single query using OR condition to avoid sequential DB roundtrips)
+  let user = await prisma.user.findFirst({
+    where: {
+      OR: [
+        { googleId },
+        { email: email.toLowerCase() }
+      ]
+    }
+  });
 
   if (!user) {
     // New user — auto-generate a permanent username
@@ -64,6 +66,12 @@ export async function googleLogin(req, res) {
         usernameLower: generatedUsername.toLowerCase(),
         role: 'STUDENT', // Authority accounts are seeded, never self-registered
       },
+    });
+  } else if (!user.googleId) {
+    // If user existed by email but googleId wasn't linked yet, update it
+    user = await prisma.user.update({
+      where: { id: user.id },
+      data: { googleId },
     });
   }
 

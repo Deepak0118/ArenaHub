@@ -86,7 +86,7 @@ export default function MyBookings() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8 py-8 md:py-12">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 md:py-12">
         
         <div className="sticky top-0 z-40 bg-background/90 backdrop-blur-xl mb-8 border-b border-border pb-6 pt-4 flex items-end justify-between -mx-6 px-6 lg:-mx-8 lg:px-8">
           <div>

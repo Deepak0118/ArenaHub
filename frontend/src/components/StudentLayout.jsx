@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { Home, Calendar, CreditCard, Trophy, LogOut, Users } from 'lucide-react';
+import { Home, Calendar, CreditCard, Trophy, LogOut, Users, Menu, X } from 'lucide-react';
 import { apiFetch } from '../utils/api';
 import { io } from 'socket.io-client';
 
@@ -10,9 +10,14 @@ export default function StudentLayout() {
   const { pathname } = useLocation();
   const { user, logout } = useAuth();
 
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [invites, setInvites] = useState([]);
   const [pendingPaymentsCount, setPendingPaymentsCount] = useState(0);
+
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [pathname]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -127,19 +132,113 @@ export default function StudentLayout() {
   };
 
   return (
-    <div className="h-screen overflow-hidden bg-background flex text-foreground">
+    <div className="h-screen overflow-hidden bg-background flex flex-col md:flex-row text-foreground">
 
-      {}
-      <aside className="w-64 border-r border-border bg-background flex flex-col relative z-20">
-        {}
-        <div className="p-6 border-b border-border">
-          <div className="text-2xl font-bold tracking-tight text-foreground font-display ">
+      {/* Top Header for Mobile */}
+      <header className="md:hidden sticky top-0 z-40 bg-background/95 backdrop-blur-xl border-b border-border px-4 py-3 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <div className="text-xl font-bold tracking-tight text-foreground font-display">
             Arena<span className="text-brand">Hub</span>
           </div>
-          <p className="text-[10px] text-foreground-secondary mt-1 font-bold ">Student Portal</p>
+          <span className="text-[9px] bg-brand/10 text-brand px-2 py-0.5 rounded font-bold">Student</span>
         </div>
 
-        {}
+        <div className="flex items-center gap-2">
+          <NavLink to="/profile" className="w-8 h-8 rounded-full bg-foreground/10 flex items-center justify-center text-xs font-bold text-foreground">
+            {user?.name?.charAt(0).toUpperCase()}
+          </NavLink>
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="p-2 text-foreground-secondary hover:text-foreground focus:outline-none"
+            aria-label="Toggle Navigation Menu"
+          >
+            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
+        </div>
+      </header>
+
+      {/* Mobile Navigation Drawer */}
+      {mobileMenuOpen && (
+        <div className="md:hidden fixed inset-0 z-50 flex">
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setMobileMenuOpen(false)}></div>
+          <div className="relative w-4/5 max-w-xs bg-background border-r border-border flex flex-col h-full z-10 p-6 shadow-2xl animate-in slide-in-from-left duration-200">
+            <div className="flex items-center justify-between pb-4 border-b border-border mb-6">
+              <div>
+                <div className="text-2xl font-bold text-foreground font-display">
+                  Arena<span className="text-brand">Hub</span>
+                </div>
+                <p className="text-[10px] text-foreground-secondary font-bold">Student Portal</p>
+              </div>
+              <button onClick={() => setMobileMenuOpen(false)} className="p-1 text-foreground-secondary hover:text-foreground">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <nav className="flex-1 space-y-2">
+              {navItems.map((item) => {
+                const count = getCategoryUnreadCount(item.category);
+                return (
+                  <NavLink
+                    key={item.path}
+                    to={item.path}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={({ isActive }) =>
+                      `flex items-center justify-between px-4 py-3 rounded-lg text-sm font-bold transition-colors ${
+                        isActive
+                          ? 'bg-brand/10 text-brand'
+                          : 'text-foreground-secondary hover:bg-white/5 hover:text-white'
+                      }`
+                    }
+                  >
+                    <div className="flex items-center gap-3">
+                      {item.icon}
+                      {item.name}
+                    </div>
+                    {count > 0 && (
+                      <div className="bg-brand text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                        {count}
+                      </div>
+                    )}
+                  </NavLink>
+                );
+              })}
+            </nav>
+
+            <div className="pt-4 border-t border-border mt-auto">
+              <NavLink
+                to="/profile"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center gap-3 mb-4 p-2 rounded-lg bg-white/5"
+              >
+                <div className="w-10 h-10 rounded-full bg-brand/20 text-brand font-bold flex items-center justify-center shrink-0">
+                  {user?.name?.charAt(0).toUpperCase()}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-sm font-bold text-foreground truncate">{user?.name}</div>
+                  <div className="text-xs text-foreground-secondary truncate">@{user?.username}</div>
+                </div>
+              </NavLink>
+              <button
+                onClick={handleLogout}
+                className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-error/10 hover:bg-error/20 text-error text-xs font-bold rounded-lg transition-colors"
+              >
+                <LogOut className="w-4 h-4" />
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Desktop Sidebar */}
+      <aside className="hidden md:flex w-64 border-r border-border bg-background flex-col relative z-20 shrink-0">
+        <div className="p-6 border-b border-border">
+          <div className="text-2xl font-bold tracking-tight text-foreground font-display">
+            Arena<span className="text-brand">Hub</span>
+          </div>
+          <p className="text-[10px] text-foreground-secondary mt-1 font-bold">Student Portal</p>
+        </div>
+
         <nav className="flex-1 p-4 space-y-1">
           {navItems.map((item) => {
             const count = getCategoryUnreadCount(item.category);
@@ -168,7 +267,6 @@ export default function StudentLayout() {
           })}
         </nav>
 
-        {}
         <div className="p-4 border-t border-border">
           <div className="flex items-center gap-3 px-2">
             <NavLink
@@ -186,7 +284,6 @@ export default function StudentLayout() {
               </div>
             </NavLink>
 
-            {}
             <button
               onClick={handleLogout}
               className="p-2 text-foreground-secondary hover:text-error transition-colors rounded hover:bg-error/10 shrink-0"
@@ -198,34 +295,33 @@ export default function StudentLayout() {
         </div>
       </aside>
 
-      {}
-      <main className="flex-1 overflow-y-auto scrollbar-hide flex flex-col relative">
-        {}
+      {/* Main Content Area */}
+      <main className="flex-1 overflow-y-auto scrollbar-hide flex flex-col relative pb-16 md:pb-0">
         {invites.length > 0 && (
-          <div className="sticky top-0 z-50 flex flex-col w-full shadow-2xl">
+          <div className="sticky top-0 z-30 flex flex-col w-full shadow-2xl">
             {invites.map(invite => (
-              <div key={invite.id} className="bg-background-elevated border-b border-border px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div key={invite.id} className="bg-background-elevated border-b border-border px-4 md:px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 rounded-full bg-white/5 border border-border flex items-center justify-center shrink-0">
                     <Users className="w-5 h-5 text-brand" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-foreground-secondary">
+                    <p className="text-xs md:text-sm font-medium text-foreground-secondary">
                       <strong className="font-bold text-foreground">{invite.createdBy?.name || 'Someone'}</strong> invited you to play
                     </p>
-                    <p className="text-lg font-bold font-display text-foreground">{invite.gameConfig?.name}</p>
+                    <p className="text-base md:text-lg font-bold font-display text-foreground">{invite.gameConfig?.name}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3 shrink-0">
                   <button
                     onClick={() => handleDeclineInvite(invite.id)}
-                    className="px-5 py-2.5 bg-transparent border border-border hover:border-error hover:text-error transition-colors text-foreground-secondary text-xs font-bold rounded"
+                    className="flex-1 sm:flex-initial px-5 py-2 bg-transparent border border-border hover:border-error hover:text-error transition-colors text-foreground-secondary text-xs font-bold rounded"
                   >
                     Decline
                   </button>
                   <button
                     onClick={() => handleAcceptInvite(invite.id)}
-                    className="px-6 py-2.5 bg-brand hover:bg-brand-light text-background transition-colors text-xs font-bold rounded shadow-lg shadow-brand/20 hover:shadow-xl hover:shadow-brand/30"
+                    className="flex-1 sm:flex-initial px-6 py-2 bg-brand hover:bg-brand-light text-background transition-colors text-xs font-bold rounded shadow-lg shadow-brand/20"
                   >
                     Accept
                   </button>
@@ -239,6 +335,34 @@ export default function StudentLayout() {
           <Outlet />
         </div>
       </main>
+
+      {/* Mobile Bottom Navigation Bar */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-xl border-t border-border flex justify-around items-center py-2 px-1 shadow-2xl">
+        {navItems.map((item) => {
+          const count = getCategoryUnreadCount(item.category);
+          return (
+            <NavLink
+              key={item.path}
+              to={item.path}
+              className={({ isActive }) =>
+                `flex flex-col items-center gap-1 px-3 py-1 rounded-lg text-[10px] font-bold transition-all relative ${
+                  isActive ? 'text-brand' : 'text-foreground-secondary hover:text-foreground'
+                }`
+              }
+            >
+              <div className="relative">
+                {item.icon}
+                {count > 0 && (
+                  <span className="absolute -top-1 -right-2 bg-brand text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center animate-pulse">
+                    {count}
+                  </span>
+                )}
+              </div>
+              <span>{item.name}</span>
+            </NavLink>
+          );
+        })}
+      </div>
 
     </div>
   );

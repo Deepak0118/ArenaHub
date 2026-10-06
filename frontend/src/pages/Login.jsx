@@ -14,11 +14,16 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [loadingMsg, setLoadingMsg] = useState('');
 
   const from = location.state?.from?.pathname || '/games';
 
   const handleGoogleSuccess = async (credentialResponse) => {
     setError('');
+    setIsLoggingIn(true);
+    setLoadingMsg('Authenticating with Google...');
+
     try {
       const res = await fetch(`${API_BASE_URL}/auth/google`, {
         method: 'POST',
@@ -32,6 +37,7 @@ export default function Login() {
         throw new Error(data.message || 'Login failed');
       }
 
+      setLoadingMsg('Redirecting to Dashboard...');
       if (data.needsUsername) {
         navigate('/register', {
           state: { tempToken: data.tempToken, email: data.user.email }
@@ -42,6 +48,7 @@ export default function Login() {
       }
     } catch (err) {
       setError(err.message || 'An error occurred during sign in.');
+      setIsLoggingIn(false);
     }
   };
 
@@ -58,6 +65,10 @@ export default function Login() {
       finalEmail += '@chitkara.edu.in';
     }
 
+    setError('');
+    setIsLoggingIn(true);
+    setLoadingMsg('Signing in...');
+
     try {
       const res = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
@@ -68,13 +79,16 @@ export default function Login() {
       const data = await res.json();
       
       if (data.success) {
+        setLoadingMsg('Redirecting...');
         login(data.token, data.user);
         navigate(data.user.role === 'AUTHORITY' ? '/authority' : '/games');
       } else {
         setError(data.message || "Invalid credentials. Please try again.");
+        setIsLoggingIn(false);
       }
     } catch (err) {
       setError("Failed to connect to the server. Please check your database connection.");
+      setIsLoggingIn(false);
     }
   };
 
@@ -87,8 +101,19 @@ export default function Login() {
         </h1>
       </div>
 
-      <div className="w-full max-w-md relative z-10 bg-background/50 backdrop-blur-xl border border-border p-8 md:p-10 shadow-2xl flex flex-col items-center rounded-sm">
+      <div className="w-full max-w-md relative z-10 bg-background/50 backdrop-blur-xl border border-border p-8 md:p-10 shadow-2xl flex flex-col items-center rounded-sm overflow-hidden">
         
+        {/* Loading Overlay */}
+        {isLoggingIn && (
+          <div className="absolute inset-0 bg-background/95 backdrop-blur-md z-30 flex flex-col items-center justify-center gap-3.5 p-6 text-center animate-in fade-in duration-200">
+            <div className="w-10 h-10 rounded-full border-2 border-brand border-t-transparent animate-spin shadow-lg shadow-brand/40" />
+            <div className="space-y-1">
+              <p className="text-sm font-bold text-foreground tracking-wide font-display">{loadingMsg}</p>
+              <p className="text-[11px] text-foreground-secondary font-medium">Connecting to ArenaHub...</p>
+            </div>
+          </div>
+        )}
+
         <div className="text-center mb-8">
           <h1 className="text-4xl font-display text-foreground mb-3">
             Arena<span className="text-brand">Hub</span>
@@ -118,9 +143,10 @@ export default function Login() {
               <input 
                 type="email"
                 value={email}
+                disabled={isLoggingIn}
                 onChange={e => setEmail(e.target.value)}
                 placeholder="name@chitkara.edu.in"
-                className="w-full bg-background border border-border rounded px-4 py-3 text-sm text-foreground focus:outline-none focus:border-brand transition-colors"
+                className="w-full bg-background border border-border rounded px-4 py-3 text-sm text-foreground focus:outline-none focus:border-brand transition-colors disabled:opacity-50"
               />
             </div>
             <div>
@@ -131,14 +157,16 @@ export default function Login() {
                 <input 
                   type={showPassword ? "text" : "password"}
                   value={password}
+                  disabled={isLoggingIn}
                   onChange={e => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full bg-background border border-border rounded px-4 py-3 pr-11 text-sm text-foreground focus:outline-none focus:border-brand transition-colors"
+                  className="w-full bg-background border border-border rounded px-4 py-3 pr-11 text-sm text-foreground focus:outline-none focus:border-brand transition-colors disabled:opacity-50"
                 />
                 <button
                   type="button"
+                  disabled={isLoggingIn}
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white hover:opacity-80 transition-opacity p-1 flex items-center justify-center z-10"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white hover:opacity-80 transition-opacity p-1 flex items-center justify-center z-10 disabled:opacity-50"
                   title={showPassword ? "Hide password" : "Show password"}
                 >
                   {showPassword ? (
@@ -151,7 +179,8 @@ export default function Login() {
             </div>
             <button 
               type="submit"
-              className="w-full bg-brand text-background font-bold text-xs py-3.5 rounded hover:bg-brand/90 transition-colors mt-2"
+              disabled={isLoggingIn}
+              className="w-full bg-brand text-background font-bold text-xs py-3.5 rounded hover:bg-brand/90 transition-colors mt-2 disabled:opacity-50"
             >
               Sign In
             </button>

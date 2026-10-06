@@ -45,17 +45,17 @@ export default function Profile() {
           {}
           <div>
             <div className="bg-transparent border border-border rounded-lg p-8 hover:border-brand/30 transition-colors">
-              <div className="flex items-start gap-6">
-                <div className="w-24 h-24 rounded-lg bg-brand/10 border border-brand/20 flex items-center justify-center shrink-0">
-                  <span className="text-4xl font-bold text-brand font-display">
+              <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4 sm:gap-6">
+                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-lg bg-brand/10 border border-brand/20 flex items-center justify-center shrink-0">
+                  <span className="text-3xl sm:text-4xl font-bold text-brand font-display">
                     {user.name?.charAt(0).toUpperCase()}
                   </span>
                 </div>
                 <div className="flex-1 min-w-0 pt-2">
-                  <h2 className="text-2xl font-bold text-foreground font-display truncate mb-1">
+                  <h2 className="text-xl sm:text-2xl font-bold text-foreground font-display truncate mb-1">
                     {user.name}
                   </h2>
-                  <div className="flex items-center gap-2 text-foreground-secondary mb-4">
+                  <div className="flex items-center justify-center sm:justify-start gap-2 text-foreground-secondary mb-4">
                     <span className="text-sm font-medium">@{user.username}</span>
                     <span className="w-1.5 h-1.5 rounded-full bg-border"></span>
                     <span className="text-[10px] font-bold bg-background-elevated px-2 py-0.5 rounded border border-border">

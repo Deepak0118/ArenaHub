@@ -194,7 +194,7 @@ export default function ActiveBooking() {
             <p className="text-xs font-bold text-brand mb-6">
               Collection Window Open
             </p>
-            <div className="font-display text-8xl md:text-9xl font-bold tabular-nums text-brand">
+            <div className="font-display text-6xl sm:text-8xl md:text-9xl font-bold tabular-nums text-brand">
               {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
             </div>
           </div>

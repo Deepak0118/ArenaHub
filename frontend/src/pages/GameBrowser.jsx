@@ -36,7 +36,7 @@ export default function GameBrowser() {
   return (
     <div className="min-h-screen bg-background text-foreground pb-12">
       <div className="sticky top-0 z-40 bg-background/90 backdrop-blur-xl pt-8 pb-4 shadow-sm">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           
           {}
           <div className="mb-8 border-b border-border pb-6 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">

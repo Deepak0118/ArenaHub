@@ -37,7 +37,7 @@ export default function EventsBoard() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8 py-8 md:py-12">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 md:py-12">
         
         <div className="mb-8 border-b border-border pb-6 flex items-end justify-between">
           <div>
